@@ -57,6 +57,10 @@ yarn create caspar-graphics my-graphics
 ```
 *`yarn create` is available in Yarn 0.25+*
 
+Select the preferred framework `React` or `Vanilla`
+
+Select the preferred variant, in this example we'll use `React`and `Framer Motion`
+
 It will create a directory called `my-graphics` inside the current folder.<br>
 
 > **Note**: this will create a project for 1080p. If you're developing for 720, you can pass `--mode 720p` as an argument. It can also be changed later in your package.json.
@@ -68,13 +72,14 @@ my-graphics
 ├── node_modules
 ├── package.json
 ├── .gitignore
-└── src
-    └── templates
-      └── example
-          └── index.js
+└── templates
+  └── example
+    └── index.html
+    └── index.jsx
+    └── manifest.json
 ```
 
-No configuration or complicated folder structures. Just one `src/templates` folder where you put all your graphics. Once the installation is done, you can open your project folder:
+No configuration or complicated folder structures. Just one `/templates` folder where you put all your graphics. Once the installation is done, you can open your project folder:
 
 ```sh
 cd my-graphics
@@ -82,6 +87,8 @@ cd my-graphics
 
 Inside the newly created project, you can run some built-in commands:
 
+### `npm` or `yarn`
+followed by:
 ### `npm start` or `yarn start`
 
 Runs the app in development mode.<br>
