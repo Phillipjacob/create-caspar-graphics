@@ -99,7 +99,7 @@ Open [http://localhost:8080](http://localhost:8080) to view it in the browser.
 </p>
 
 Every template that you've added to the `/templates` folder will automatically be picked up, and turned into a CasparCG template that you can interact with.
-Use the GUI to view your graphics, change their preview data, send commands (e.g. play, pause, stop) and change background.
+Use the GUI to view your graphics, change their preview data, send commands (e.g. play, pause, stop) and change background. Remember the file structure, index.html, index.jsx, manifest.json.
 
 The page will automatically reload if you make changes to the code.<br>
 And you will see the build errors and lint warnings in the console.
@@ -117,13 +117,13 @@ Your graphics are now ready to be played in CasparCG!
 
 ## Developing Graphics
 
-Start by adding a new folder to your `src/templates` folder, with the name of your new graphic. Then add an index.js file in the folder you just created,
-and make sure it exports a [React Component](https://reactjs.org/docs/react-component.html), and you're done! 💫
+Start by adding a new folder to your `templates` folder, with the name of your new graphic. Then add three files, index.html, index.jsx, and manifest.json in the folder you just created.
+index.html is a standard html doctype to run the index.jsx script. Inside of index.jsx import `render`from `@nxtedition/graphics-kit`to render your functional component. In the same package you have access to `data` where you can retrive the data from your manifest.json file. You're done and ready! 💫
 
 > Note: you have to stop webpack and run `yarn start` again for it to pick up your new template.
 
 If you know React, you already know almost everything you need to know.
-The only thing different from a "normal" React component, is that you have one extra lifecycle method, and a two extra props.
+The only thing different from a "normal" React component, is that you instead for doing an export you use the `render` from `@nxtedition/graphics-kit` to render your component.
 
 ### Props
 
@@ -163,61 +163,82 @@ It's important that you call the `onComplete` callback once your out animation i
 When developing your graphic, you often need example data. This can be really tedious to add manually, and also runs the risk of making it into production.
 We've made this easy for you — simply specify a static property called `previewData` in your class, and you'll automatically get it as `props.data` when developing.
 
-### Example (using GSAP)
+### Example (using Framer Motion)
+
+
+#### index.html
+``` html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <script type="module" src="./index.jsx"></script>
+  </body>
+</html>
+
+```
+
+#### index.jsx
 ```js
-import React, { Component } from 'react'
-import { TimelineMax } from 'gsap'
-import { States } from 'caspar-graphics'
+import React from 'react'
+import { render, FramerMotion, useCasparData } from '@nxtedition/graphics-kit'
+import { motion } from 'framer-motion'
+import './style.css'
 
-export default class Example extends Component {
-  static previewData = {
-    leftText: 'Live',
-    rightText: 'nxtedition demo'
-  }
+const FramerMotionExample = () => {
+  const { name } = useCasparData()
 
-  componentDidMount() {
-    this.timeline = new TimelineMax({ paused: true })
-      .from(this.element, 0.6, { x: '100%', opacity: 0 })
+  return (
+    <FramerMotion hide={!name}>
+      <motion.div
+        key={name}
+        className="container"
+        initial={{
+          opacity: 0,
+          y: 50,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0
+        }}
+        exit={{
+          opacity: 0,
+          y: 50
+        }}
+      >
+        {name}
+      </motion.div>
+    </FramerMotion>
+  )
+}
 
-    this.setState({ didMount: true }) // Make sure componentDidUpadte() is called
-  }
+render(FramerMotionExample)
 
-  componentDidUpdate() {
-    if (this.state.state === this.props.state) {
-      return
+```
+
+#### manifest.json
+``` json
+
+{
+  "name": "Framer Motion Example",
+  "schema": {
+    "name": {
+      "type": "string",
+      "label": "Name"
     }
-
-    if (this.props.state === States.playing) {
-      this.timeline.play()
-      this.setState({ state: States.playing })
-    } else if (this.props.state === States.paused) {
-      this.timeline.pause()
-      this.setState({ state: States.paused })
+  },
+  "previewData": {
+    "Thierry Henry": {
+      "name": "Thierry Henry"
+    },
+    "Dennis Bergkamp": {
+      "name": "Dennis Bergkamp"
     }
-  }
-
-  componentWillLeave(onComplete) {
-    this.timeline
-      .eventCallback('onReverseComplete', onComplete)
-      .timeScale(2)
-      .reverse()
-  }
-
-  componentWillUnmount() {
-    this.timeline.kill()
-  }
-
-  render() {
-    const { leftText, rightText } = this.props.data
-
-    return (
-      <div ref={ref => (this.element = ref)}>
-        <div>{leftText}</div>
-        <div>{rightText}</div>
-      </div>
-    )
   }
 }
+
 ```
 
 ### Viewing Your Graphic
