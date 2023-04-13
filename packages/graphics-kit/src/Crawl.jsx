@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTimeout } from './use-timeout'
 
-export const Crawl = React.memo((props) => {
+export const Crawl = React.memo(props => {
   const { play, items } = props
   const [wasStarted, setWasStarted] = React.useState(play)
 
@@ -20,7 +20,14 @@ export const Crawl = React.memo((props) => {
 
 let key = 0
 
-const CrawlPrimitive = ({ items, renderItem, pixelsPerFrame = 5, frameRate = 25, play }) => {
+const CrawlPrimitive = ({
+  items,
+  renderItem,
+  pixelsPerFrame = 5,
+  frameRate = 25,
+  play,
+  loop
+}) => {
   const ref = React.createRef()
   const [rect, setRect] = React.useState()
   const [visibleEntries, setVisibleEntries] = React.useState([[key, items[0]]])
@@ -29,16 +36,24 @@ const CrawlPrimitive = ({ items, renderItem, pixelsPerFrame = 5, frameRate = 25,
     setRect(ref.current.getBoundingClientRect())
   }, [])
 
-  const onEntered = (item) => {
+  const onEntered = item => {
     // NOTE: this expects each item to have an id, which probably isn't ideal.
     const index = items.findIndex(({ id }) => id === item.id)
-    const nextIndex = (index + 1) % items.length
+    let nextIndex
+    if (loop) {
+      nextIndex = (index + 1) % items.length
+    } else {
+      nextIndex = index + 1
+    }
     let nextItem = items[nextIndex]
-    setVisibleEntries(items => [...items, [++key, nextItem]])
+
+    if (nextItem) {
+      setVisibleEntries(items => [...items, [++key, nextItem]])
+    }
   }
 
   const onExited = () => {
-    setVisibleEntries((items) => items.slice(1))
+    setVisibleEntries(items => items.slice(1))
   }
 
   return (
@@ -60,6 +75,7 @@ const CrawlPrimitive = ({ items, renderItem, pixelsPerFrame = 5, frameRate = 25,
             onEntered={onEntered}
             onExited={onExited}
             play={play}
+            loop={loop}
           >
             {renderItem(item)}
           </Item>
@@ -68,7 +84,15 @@ const CrawlPrimitive = ({ items, renderItem, pixelsPerFrame = 5, frameRate = 25,
   )
 }
 
-const Item = ({ item, children, offset, pixelsPerSecond, onEntered, onExited, play }) => {
+const Item = ({
+  item,
+  children,
+  offset,
+  pixelsPerSecond,
+  onEntered,
+  onExited,
+  play
+}) => {
   const { id } = item
   const ref = React.useRef()
   const [rect, setRect] = React.useState()
@@ -98,7 +122,9 @@ const Item = ({ item, children, offset, pixelsPerSecond, onEntered, onExited, pl
   }, [id])
 
   const enterDurationMs = rect ? (rect.width / pixelsPerSecond) * 1000 : null
-  const totalDurationMs = rect ? ((rect.width + offset) / pixelsPerSecond) * 1000 : null
+  const totalDurationMs = rect
+    ? ((rect.width + offset) / pixelsPerSecond) * 1000
+    : null
 
   useTimeout(() => onEntered(item), enterDurationMs)
   useTimeout(() => onExited(item), totalDurationMs)
