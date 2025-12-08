@@ -6,11 +6,12 @@ export const Screen = ({
   children,
   background,
   size = { width: 1920, height: 1080 },
-  image
+  image,
+  imageOpacity,
 }) => {
   const [ref, setRef] = useState()
   const containerSize = useSize(ref)
-
+  console.log('image', imageOpacity)
   return (
     <div ref={setRef} className={styles.container}>
       <div
@@ -20,7 +21,7 @@ export const Screen = ({
           width: size?.width || 0,
           height: size?.height || 0,
           transform: `scale(${calcScale(containerSize, size)})
-          translate(-50%, -50%)`
+          translate(-50%, -50%)`,
         }}
       >
         {children}
@@ -28,7 +29,7 @@ export const Screen = ({
           <img
             src={image.url}
             className={styles.image}
-            style={{ opacity: image.opacity ?? 0.3 }}
+            style={{ opacity: imageOpacity ?? 0.3 }}
           />
         ) : null}
       </div>

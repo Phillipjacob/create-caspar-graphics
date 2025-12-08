@@ -1,0 +1,27 @@
+{
+  "name": "Text reveal",
+  "schema": {
+    "text": {
+      "type": "string",
+      "label": "Text"
+    },
+    "bodyText": {
+      "type": "string",
+      "label": "Body Text"
+    }
+  },
+  "previewData": {
+    "text": {
+      "text": "Thierry Henry",
+      "bodyText": "Dennis Bergkamp",
+      "host1": "Thomas Larsen",
+      "host2": ""
+    },
+    "bodyText": {
+      "text": "Dennis Bergkamp",
+      "bodyText": "Thierry Henry",
+      "host1": "Thomas Ldadwdawarsen",
+      "host2": "dfsdefsd"
+    }
+  }
+}

@@ -10,7 +10,7 @@ const States = {
   loading: 0,
   loaded: 1,
   playing: 2,
-  stopped: 3
+  stopped: 3,
 }
 
 export function App({ name, templates: initialTemplates }) {
@@ -21,7 +21,7 @@ export function App({ name, templates: initialTemplates }) {
     autoPlay: false,
     background: '#21ECAF',
     imageOpacity: 0.5,
-    colorScheme: 'dark'
+    colorScheme: 'dark',
   })
   const { projectName, socket } = state
   const [persistedState, setPersistedState] = usePersistentValue(
@@ -29,15 +29,16 @@ export function App({ name, templates: initialTemplates }) {
     {
       background: '#21ECAF',
       size: { width: 1920, height: 1080 },
-      image: null
-    }
+      image: null,
+      opacity: 0.5,
+    },
   )
-
+  console.log('persistedState', persistedState)
   useEffect(() => {
     if (initialTemplates) {
       dispatch({
         type: 'init',
-        ...getInitialState({ projectName: name, templates: initialTemplates })
+        ...getInitialState({ projectName: name, templates: initialTemplates }),
       })
     }
   }, [initialTemplates, name])
@@ -57,11 +58,11 @@ export function App({ name, templates: initialTemplates }) {
       dispatch({
         type: 'init',
         socket,
-        ...getInitialState({ projectName, templates })
+        ...getInitialState({ projectName, templates }),
       })
     }
 
-    socket.addEventListener('message', evt => {
+    socket.addEventListener('message', (evt) => {
       const { type, payload } = JSON.parse(evt.data)
 
       console.log('message', { type, payload })
@@ -89,7 +90,7 @@ export function App({ name, templates: initialTemplates }) {
       templates[name] = { enabled, open, data, preset, tab }
     }
 
-    setPersistedState(persisted => ({ ...persisted, templates }))
+    setPersistedState((persisted) => ({ ...persisted, templates }))
   }, [state])
 
   const { serverUrl, serverChannel } = settings
@@ -116,13 +117,14 @@ export function App({ name, templates: initialTemplates }) {
       />
       <Screen
         settings={settings}
+        imageOpacity={persistedState?.opacity}
         size={persistedState?.size}
         background={persistedState?.background || settings.background}
         image={persistedState?.image}
       >
         {state.templates
-          ?.filter(template => template.enabled)
-          .map(template => (
+          ?.filter((template) => template.enabled)
+          .map((template) => (
             <Fragment key={template.name}>
               <TemplatePreview
                 key={template.name + template.removed}
@@ -150,7 +152,7 @@ function reducer(state, action) {
       ...state,
       socket: action.socket,
       projectName: action.projectName,
-      templates: action.templates
+      templates: action.templates,
     }
   }
 
@@ -160,7 +162,7 @@ function reducer(state, action) {
   }
 
   const index = state.templates.findIndex(
-    template => template.name === action.template
+    (template) => template.name === action.template,
   )
 
   if (index === -1) {
@@ -169,7 +171,7 @@ function reducer(state, action) {
 
   const template = state.templates[index]
 
-  const updateTemplate = data => {
+  const updateTemplate = (data) => {
     const templates = [...state.templates]
     templates[index] = { ...template, ...data }
     return { ...state, templates }
@@ -179,7 +181,7 @@ function reducer(state, action) {
     case 'toggle-enabled':
       return updateTemplate({
         enabled: !template.enabled,
-        show: template.enabled ? false : template.show
+        show: template.enabled ? false : template.show,
       })
     case 'toggle-open':
       return updateTemplate({ open: !template.open })
@@ -191,14 +193,14 @@ function reducer(state, action) {
     case 'removed':
       return updateTemplate({
         state: States.loading,
-        removed: (template.removed ?? 0) + 1
+        removed: (template.removed ?? 0) + 1,
       })
     case 'preset-change':
       const payload = { preset: action.preset }
 
       if (action.update) {
         payload.data = template.presets.find(
-          ([key]) => key === action.preset
+          ([key]) => key === action.preset,
         )?.[1]
       }
 
@@ -212,7 +214,7 @@ function reducer(state, action) {
         image:
           template.image?.url === action.url
             ? null
-            : { url: action.url, opacity: 0.5 }
+            : { url: action.url, opacity: 0.5 },
       })
     case 'select-tab':
       return updateTemplate({ tab: action.tab })
@@ -238,13 +240,13 @@ function getInitialState({ projectName, templates }) {
 
   try {
     const globalSettings = JSON.parse(
-      window.localStorage.getItem('caspar-graphics')
+      window.localStorage.getItem('caspar-graphics'),
     )
     const projectSettings = JSON.parse(
-      window.localStorage.getItem(`caspar-graphics.${projectName}`)
+      window.localStorage.getItem(`caspar-graphics.${projectName}`),
     )
     snapshot = { ...globalSettings, ...projectSettings }
-  } catch (err) { }
+  } catch (err) {}
 
   return {
     projectName,
@@ -271,9 +273,9 @@ function getInitialState({ projectName, templates }) {
           show: Boolean(snapshot.autoPlay),
           tab: templateSnapshot?.tab,
           state: States.loading,
-          layer: layer ?? index
+          layer: layer ?? index,
         }
       })
-      .sort((a, b) => a.layer - b.layer)
+      .sort((a, b) => a.layer - b.layer),
   }
 }

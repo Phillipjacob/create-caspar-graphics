@@ -17,7 +17,7 @@ import {
   MenuRadioGroup,
   MenuRadioItem,
   MenuLabel,
-  MenuSeparator
+  MenuSeparator,
 } from './Menu'
 import { getPresets } from './app'
 import { IoIosSettings } from 'react-icons/io'
@@ -25,7 +25,14 @@ import { TopSettings, BottomSettings } from './Settings'
 import { JsonEditor } from './JsonEditor'
 import * as Tabs from '@radix-ui/react-tabs'
 
-export const Sidebar = ({ state, dispatch, settings, onSettingsChange, projectState, onProjectStateChange }) => {
+export const Sidebar = ({
+  state,
+  dispatch,
+  settings,
+  onSettingsChange,
+  projectState,
+  onProjectStateChange,
+}) => {
   const { templates } = state
 
   // TODO:
@@ -52,7 +59,7 @@ export const Sidebar = ({ state, dispatch, settings, onSettingsChange, projectSt
       {settings.showSidebar && (
         <>
           <div className={styles.templates}>
-            {templates?.map(template => (
+            {templates?.map((template) => (
               <Template
                 key={template.name}
                 showJson={settings.showJson}
@@ -65,6 +72,7 @@ export const Sidebar = ({ state, dispatch, settings, onSettingsChange, projectSt
               />
             ))}
           </div>
+
           <BottomSettings
             colorMode={colorMode}
             settings={settings}
@@ -96,9 +104,10 @@ const Template = ({
   onProjectStateChange,
   enabled,
   open,
-  tab = 'data'
+  tab = 'data',
 }) => {
   const [pending, setPending] = useState()
+  const { opacity, setOpacity } = useState()
   const currentPreset = presets?.find(([key]) => key === preset)
   const currentData = pending ?? data
   const hasPendingUpdate =
@@ -130,10 +139,10 @@ const Template = ({
         <Switch
           disabled={!enabled}
           checked={show}
-          onChange={checked => {
+          onChange={(checked) => {
             dispatch({
               type: checked ? 'show' : 'hide',
-              template: name
+              template: name,
             })
           }}
         />
@@ -142,7 +151,7 @@ const Template = ({
         <Tabs.Root
           className={styles.tabs}
           value={tab}
-          onValueChange={tab => {
+          onValueChange={(tab) => {
             dispatch({ type: 'select-tab', template: name, tab })
           }}
         >
@@ -168,7 +177,7 @@ const Template = ({
                     dispatch({
                       type: 'caspar-update',
                       template: name,
-                      data: currentData
+                      data: currentData,
                     })
                     setPending(null)
                   }}
@@ -185,14 +194,14 @@ const Template = ({
                         <MenuLabel>Presets</MenuLabel>
                         <MenuRadioGroup
                           value={preset}
-                          onValueChange={key => {
+                          onValueChange={(key) => {
                             dispatch({
                               type: 'preset-change',
                               template: name,
-                              preset: key
+                              preset: key,
                             })
                             setPending(
-                              presets.find(preset => preset[0] === key)?.[1]
+                              presets.find((preset) => preset[0] === key)?.[1],
                             )
                           }}
                         >
@@ -211,7 +220,7 @@ const Template = ({
                           currentPreset != null &&
                           currentData != null &&
                           JSON.stringify(currentPreset[1]) ===
-                          JSON.stringify(currentData)
+                            JSON.stringify(currentData)
                         }
                         onSelect={() => {
                           setPending(presets[0][1])
@@ -238,7 +247,7 @@ const Template = ({
           <Tabs.Content className={styles.tabContent} value="data">
             <form
               className={styles.data}
-              onKeyDown={evt => {
+              onKeyDown={(evt) => {
                 if (
                   (evt.key === 's' && evt.metaKey) ||
                   (!showJson && evt.key === 'Enter')
@@ -248,11 +257,11 @@ const Template = ({
                   dispatch({
                     type: 'caspar-update',
                     template: name,
-                    data: pending || data
+                    data: pending || data,
                   })
                 }
               }}
-              onSubmit={evt => {
+              onSubmit={(evt) => {
                 evt.preventDefault()
               }}
             >
@@ -260,7 +269,7 @@ const Template = ({
                 <JsonEditor value={currentData || {}} onChange={setPending} />
               ) : (
                 Object.entries(schema).map(([key, property]) => {
-                  const onChange = value => {
+                  const onChange = (value) => {
                     setPending({ ...currentData, [key]: value })
                   }
 
@@ -271,7 +280,7 @@ const Template = ({
                     id: key,
                     label: property.label ?? key,
                     value,
-                    onChange
+                    onChange,
                   }
 
                   if (type === 'boolean') {
@@ -290,21 +299,46 @@ const Template = ({
           {hasImages && (
             <Tabs.Content className={styles.tabContent} value="image">
               <div className={styles.images}>
-                {previewImages.map(url => (
+                {previewImages.map((url) => (
                   <button
                     key={url}
                     className={styles.imageToggle}
-                    data-active={projectState.image?.url === url ? true : undefined}
+                    data-active={
+                      projectState.image?.url === url ? true : undefined
+                    }
                     onClick={() => {
-                      onProjectStateChange(state => ({
+                      onProjectStateChange((state) => ({
                         ...state,
-                        image: state.image?.url === url ? null : { url }
+                        image: state.image?.url === url ? null : { url },
                       }))
                     }}
                   >
                     <img src={url} className={styles.image} />
                   </button>
                 ))}
+                <div style={{ padding: '1rem' }}>
+                  <label htmlFor="opacity-slider">
+                    Image Opacity: {opacity}
+                  </label>
+                  <input
+                    id="opacity-slider"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={opacity}
+                    // onChange={(background) => {
+                    //   onProjectStateChange((value) => ({ ...value, background }))
+                    // }}
+                    onChange={(e) =>
+                      onProjectStateChange((value) => ({
+                        ...value,
+                        opacity: e.target.value,
+                      }))
+                    }
+                    style={{ width: '100%' }}
+                  />
+                </div>
               </div>
             </Tabs.Content>
           )}
@@ -321,7 +355,7 @@ const Template = ({
                         type: 'preset-change',
                         template: name,
                         preset: key,
-                        update: true
+                        update: true,
                       })
                     }}
                   >

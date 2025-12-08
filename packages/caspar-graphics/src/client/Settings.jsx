@@ -12,7 +12,7 @@ import {
   MenuTrigger,
   MenuContent,
   MenuRadioGroup,
-  MenuRadioItem
+  MenuRadioItem,
 } from './Menu'
 
 export const TopSettings = ({ value, onChange }) => {
@@ -21,7 +21,7 @@ export const TopSettings = ({ value, onChange }) => {
     autoPlay,
     showJson,
     serverUrl,
-    serverChannel
+    serverChannel,
   } = value
 
   if (!showSidebar) {
@@ -31,7 +31,7 @@ export const TopSettings = ({ value, onChange }) => {
           className={`${styles.button} ${styles.menuButton}`}
           style={{ marginLeft: -12 }}
           onClick={() => {
-            onChange(value => ({ ...value, showSidebar: true }))
+            onChange((value) => ({ ...value, showSidebar: true }))
           }}
         >
           <MdMenu />
@@ -55,8 +55,8 @@ export const TopSettings = ({ value, onChange }) => {
           <Input
             value={serverUrl ?? ''}
             label="Server URL"
-            onChange={serverUrl => {
-              onChange(value => ({ ...value, serverUrl }))
+            onChange={(serverUrl) => {
+              onChange((value) => ({ ...value, serverUrl }))
             }}
           />
           <Input
@@ -64,8 +64,8 @@ export const TopSettings = ({ value, onChange }) => {
             label="Channel"
             type="number"
             min="1"
-            onChange={serverChannel => {
-              onChange(value => ({ ...value, serverChannel }))
+            onChange={(serverChannel) => {
+              onChange((value) => ({ ...value, serverChannel }))
             }}
           />
         </PopoverContent>
@@ -77,8 +77,8 @@ export const TopSettings = ({ value, onChange }) => {
           id="autoPlay"
           className={styles.switch}
           checked={Boolean(autoPlay)}
-          onChange={autoPlay => {
-            onChange(value => ({ ...value, autoPlay }))
+          onChange={(autoPlay) => {
+            onChange((value) => ({ ...value, autoPlay }))
           }}
         />
       </div>
@@ -89,15 +89,15 @@ export const TopSettings = ({ value, onChange }) => {
           id="json"
           className={styles.switch}
           checked={Boolean(showJson)}
-          onChange={showJson => {
-            onChange(value => ({ ...value, showJson }))
+          onChange={(showJson) => {
+            onChange((value) => ({ ...value, showJson }))
           }}
         />
       </div>
       <button
         className={`${styles.button} ${styles.menuButton}`}
         onClick={() => {
-          onChange(value => ({ ...value, showSidebar: false }))
+          onChange((value) => ({ ...value, showSidebar: false }))
         }}
       >
         <FiChevronsLeft />
@@ -106,12 +106,41 @@ export const TopSettings = ({ value, onChange }) => {
   )
 }
 
-export const BottomSettings = ({ settings, onSettingsChange, projectState, onProjectStateChange, colorMode }) => {
+export const BottomSettings = ({
+  settings,
+  onSettingsChange,
+  projectState,
+  onProjectStateChange,
+  colorMode,
+}) => {
   const { colorScheme } = settings
   const { background } = projectState || {}
-
+  const [opacity, useOpacity] = useState()
   return (
     <div className={styles.container}>
+      <div className={styles.control}>
+        <div>
+          <label htmlFor="opacity-slider">Image Opacity: {opacity}</label>
+          <input
+            id="opacity-slider"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={opacity}
+            // onChange={(background) => {
+            //   onProjectStateChange((value) => ({ ...value, background }))
+            // }}
+            onChange={(e) =>
+              onProjectStateChange((value) => ({
+                ...value,
+                opacity: e.target.value,
+              }))
+            }
+            style={{ width: '100%' }}
+          />
+        </div>
+      </div>
       <div className={styles.control}>
         <label>Background</label>
         <Popover>
@@ -121,8 +150,8 @@ export const BottomSettings = ({ settings, onSettingsChange, projectState, onPro
           <PopoverContent>
             <HexColorPicker
               color={background}
-              onChange={background => {
-                onProjectStateChange(value => ({ ...value, background }))
+              onChange={(background) => {
+                onProjectStateChange((value) => ({ ...value, background }))
               }}
             />
           </PopoverContent>
@@ -135,8 +164,8 @@ export const BottomSettings = ({ settings, onSettingsChange, projectState, onPro
         <MenuContent>
           <MenuRadioGroup
             value={colorScheme || 'system'}
-            onValueChange={colorScheme => {
-              onSettingsChange(value => ({ ...value, colorScheme }))
+            onValueChange={(colorScheme) => {
+              onSettingsChange((value) => ({ ...value, colorScheme }))
             }}
           >
             <MenuRadioItem value="system">System</MenuRadioItem>

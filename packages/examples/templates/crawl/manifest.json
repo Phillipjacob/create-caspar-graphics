@@ -1,0 +1,54 @@
+{
+  "name": "Crawl",
+  "layer": 10,
+  "schema": {
+    "pixelsPerFrame": {
+      "type": "number",
+      "label": "Pixels Per Frame"
+    },
+    "maxItems": {
+      "type": "number",
+      "label": "Max Items"
+    },
+
+    "loop": {
+      "type": "boolean",
+      "label": "Loop"
+    }
+  },
+  "previewData": {
+    "content": {
+      "content": [
+        {
+          "text": "**Musik:** Anders Mechlenburg"
+        },
+        {
+          "text": "2nd"
+        },
+        { "text": "3rd" }
+      ],
+      "pixelsPerFrame": 6,
+      "maxItems": 15,
+      "loop": true
+    },
+    "contentShort": {
+      "content": [
+        {
+          "text": "**BREAKING** Tium atendi omnis venda sam alignim ea que prepraeris"
+        },
+        {
+          "text": "**BREAKING** Last line"
+        }
+      ],
+      "pixelsPerFrame": 6,
+      "maxItems": 15
+    },
+    "tickerRSS": {
+      "rss": "https://tv2nord.dk/rss",
+      "topic": "sport",
+      "topicColor": "#f0281e",
+      "background": true
+    }
+  },
+  "previewImages": ["./reference/ticker.png"]
+}

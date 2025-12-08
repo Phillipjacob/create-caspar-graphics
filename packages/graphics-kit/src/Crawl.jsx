@@ -26,20 +26,25 @@ const CrawlPrimitive = ({
   play,
   loop = true,
   onExit,
+  onThresholdReached,
+  thresholdPercent = 0,
 }) => {
   const ref = React.createRef()
   const [rect, setRect] = React.useState()
   const [visibleEntries, setVisibleEntries] = React.useState([[key, items[0]]])
-
   React.useLayoutEffect(() => {
     setRect(ref.current.getBoundingClientRect())
   }, [])
 
   const onEntered = (item) => {
-    // NOTE: this expects each item to have an id, which probably isn't ideal.
     const index = items.findIndex(({ id }) => id === item.id)
-    const nextIndex = (index + 1) % items.length
-    let nextItem = items[nextIndex]
+    const nextIndex = loop ? (index + 1) % items.length : index + 1
+
+    if (nextIndex >= items.length) {
+      return
+    }
+
+    const nextItem = items[nextIndex]
     setVisibleEntries((items) => [...items, [++key, nextItem]])
   }
 
@@ -71,6 +76,8 @@ const CrawlPrimitive = ({
               pixelsPerSecond={pixelsPerFrame * frameRate}
               onEntered={onEntered}
               onExited={onExited}
+              onThresholdReached={onThresholdReached}
+              thresholdPercent={thresholdPercent}
             >
               {renderItem(item, {
                 showSeparator: loop || index < items.length - 1,
@@ -89,13 +96,42 @@ const Item = ({
   pixelsPerSecond,
   onEntered,
   onExited,
+  onThresholdReached,
+  thresholdPercent = 0,
 }) => {
   const ref = React.useRef()
   const [width, setWidth] = React.useState()
+  const [thresholdFired, setThresholdFired] = React.useState(false)
 
   React.useEffect(() => {
-    setWidth(ref.current.getBoundingClientRect().width)
+    if (ref.current) {
+      setWidth(ref.current.getBoundingClientRect().width)
+    }
   }, [])
+
+  React.useEffect(() => {
+    if (width && !thresholdFired) {
+      const totalDistance = offset + width
+      const totalTime = totalDistance / pixelsPerSecond
+      const thresholdTime = totalTime * ((100 - thresholdPercent) / 100)
+
+      const timer = window.setTimeout(() => {
+        if (onThresholdReached) {
+          onThresholdReached(item)
+        }
+        setThresholdFired(true)
+      }, thresholdTime * 1000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [
+    width,
+    offset,
+    pixelsPerSecond,
+    thresholdPercent,
+    onThresholdReached,
+    thresholdFired,
+  ])
 
   const totalDistance = offset + (width ?? 0)
 
