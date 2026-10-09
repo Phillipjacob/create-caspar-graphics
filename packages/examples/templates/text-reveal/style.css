@@ -1,0 +1,23 @@
+.container {
+  position: absolute;
+  bottom: 80px;
+  left: 266px;
+  min-width: 600px;
+  padding: 20px 30px;
+  background-color: white;
+  border-left: 10px solid #ff3c00;
+  border-radius: 6px;
+  font-family: sans-serif;
+  white-space: pre;
+  opacity: 0;
+}
+
+.title {
+  font-size: 70px;
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 40px;
+  color: #555;
+}

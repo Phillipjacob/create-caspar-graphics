@@ -1,0 +1,28 @@
+{
+  "name": "TextReveal",
+  "width": 1920,
+  "height": 1080,
+  "schema": {
+    "title": {
+      "type": "string",
+      "label": "Title"
+    },
+    "subtitle": {
+      "type": "string",
+      "label": "Subtitle"
+    }
+  },
+  "previewData": {
+    "Thierry Henry": {
+      "title": "Thierry Henry",
+      "subtitle": "Arsenal legend"
+    },
+    "Dennis Bergkamp": {
+      "title": "Dennis Bergkamp",
+      "subtitle": "The non-flying Dutchman"
+    },
+    "Title only": {
+      "title": "Breaking news"
+    }
+  }
+}
