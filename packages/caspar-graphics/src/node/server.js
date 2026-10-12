@@ -59,15 +59,19 @@ export async function createServer({ name, mode, host = 'localhost' }) {
     root: paths.appTemplates,
     clearScreen: false,
     base: '/templates/',
-    // HACK: this is required when running our examples
-    resolve:
-      paths.appPath === paths.examplesPath
+    resolve: {
+      // NOTE: graphics-kit and the templates must share a single framer-motion,
+      // otherwise AnimatePresence in one can't see motion components in the other.
+      dedupe: ['react', 'react-dom', 'framer-motion'],
+      // HACK: this is required when running our examples
+      ...(paths.appPath === paths.examplesPath
         ? {
             alias: {
               'react-dom': path.resolve(paths.ownNodeModules, 'react-dom'),
             },
           }
-        : {},
+        : {}),
+    },
     esbuild: {
       target: 'chrome71',
     },

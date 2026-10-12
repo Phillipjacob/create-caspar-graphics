@@ -36,7 +36,7 @@ export async function build({
     logLevel,
     resolve: {
       // NOTE: this is required when graphics-kit is linked.
-      dedupe: ['react', 'react-dom'],
+      dedupe: ['react', 'react-dom', 'framer-motion'],
       // react: resolve(paths.appNodeModules, 'react'),
       // 'react-dom': resolve(paths.appNodeModules, 'react-dom')
     },
